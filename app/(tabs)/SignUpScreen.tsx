@@ -1,7 +1,9 @@
+import { useRouter } from 'expo-router';
 import React, { useState } from 'react';
-import { StyleSheet, Text, View, Button, TextInput, TouchableOpacity } from 'react-native';
+import { Button, StyleSheet, Text, TextInput, TouchableOpacity, View } from 'react-native';
 
-export default function SignUpScreen({ navigation }: any) {
+export default function SignUpScreen() {
+  const router = useRouter();
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
   return (
@@ -21,8 +23,8 @@ export default function SignUpScreen({ navigation }: any) {
         onChangeText={setPassword}
         secureTextEntry
       />
-      <Button title="Sign Up" onPress={() => navigation.replace('Home')} />
-      <TouchableOpacity onPress={() => navigation.goBack()}>
+      <Button title="Sign Up" onPress={() => router.replace('/')} />
+      <TouchableOpacity onPress={() => router.back()}>
         <Text style={styles.link}>Already have an account? Login</Text>
       </TouchableOpacity>
     </View>
