@@ -1,0 +1,12 @@
+{
+  "name": "equipmentlocatorapi",
+  "version": "1.0.0",
+  "main": "index.js",
+  "license": "MIT",
+  "dependencies": {
+    "express": "^4.x",
+    "mongoose": "^7.x",
+    "bcrypt": "^5.x",
+    "cors": "^2.x"
+  }
+}
