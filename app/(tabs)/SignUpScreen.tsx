@@ -5,16 +5,26 @@ import { Alert, Button, StyleSheet, Text, TextInput, TouchableOpacity, View } fr
 
 export default function SignUpScreen() {
   const router = useRouter();
-  const [username, setUsername] = useState('');
+  const [name, setName] = useState('');
+  const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+
+  // Frontend validation for @packagingcorp.com email
+  const isValidPackagingCorpEmail = (email: string) => {
+    return email.toLowerCase().endsWith('@packagingcorp.com');
+  };
 
   // ✅ This function actually calls your backend API
   const handleSignUp = async () => {
+    if (!isValidPackagingCorpEmail(email)) {
+      Alert.alert('Error', 'Email must end with @packagingcorp.com!');
+      return;
+    }
     try {
       // ✅ Replace with your PC's local IP, not localhost if using physical phone
-      const res = await axios.post('http://172.20.10.3:3000/signup', {
-        name: username,
-        email: `${username}@example.com`,  // You can customize this or add an email field
+      const res = await axios.post('http://172.20.10.2:3000/signup', {
+        name: name,
+        email: email,
         password: password,
       }, {
         headers: {
@@ -42,20 +52,33 @@ export default function SignUpScreen() {
   return (
     <View style={styles.container}>
       <Text style={styles.title}>Sign Up</Text>
-      <TextInput
-        style={styles.input}
-        placeholder="Username"
-        value={username}
-        onChangeText={setUsername}
-        autoCapitalize="none"
-      />
-      <TextInput
-        style={styles.input}
-        placeholder="Password"
-        value={password}
-        onChangeText={setPassword}
-        secureTextEntry
-      />
+      <View style={{ width: 250 }}>
+        <Text style={styles.label}>Name</Text>
+        <TextInput
+          style={styles.input}
+          placeholder="Enter your name"
+          value={name}
+          onChangeText={setName}
+          autoCapitalize="words"
+        />
+        <Text style={styles.label}>Email</Text>
+        <TextInput
+          style={styles.input}
+          placeholder="Enter your email"
+          value={email}
+          onChangeText={setEmail}
+          autoCapitalize="none"
+          keyboardType="email-address"
+        />
+        <Text style={styles.label}>Password</Text>
+        <TextInput
+          style={styles.input}
+          placeholder="Enter your password"
+          value={password}
+          onChangeText={setPassword}
+          secureTextEntry
+        />
+      </View>
       <Button title="Sign Up" onPress={handleSignUp} />
       <TouchableOpacity onPress={() => router.back()}>
         <Text style={styles.link}>Already have an account? Login</Text>
@@ -70,6 +93,7 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
     padding: 20,
+    backgroundColor: '#fff', // Ensures white background on mobile
   },
   title: {
     fontSize: 24,
@@ -85,6 +109,13 @@ const styles = StyleSheet.create({
     marginBottom: 12,
     paddingHorizontal: 10,
     backgroundColor: '#fff',
+  },
+  label: {
+    fontSize: 16,
+    fontWeight: '500',
+    marginBottom: 4,
+    marginTop: 8,
+    color: '#333',
   },
   link: {
     color: '#007bff',
