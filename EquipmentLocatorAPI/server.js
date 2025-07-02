@@ -4,6 +4,11 @@ const mongoose = require('mongoose');
 const bcrypt = require('bcrypt');
 const cors = require('cors');
 const User = require('./models/user');
+const jwt = require('jsonwebtoken');
+const JWT_SECRET = 'YOUR_SECRET_KEY'; // Use env variable in production
+const ldap = require('ldapjs');
+const LDAP_URL = process.env.LDAP_URL || 'ldap://your-ad-server.com';
+const BASE_DN = process.env.LDAP_BASE_DN || 'dc=yourdomain,dc=com';
 
 const app = express();
 app.use(express.json());
@@ -52,7 +57,11 @@ app.post('/signup', async (req, res) => {
 
   await user.save();
   console.log('✅ User saved:', cleanEmail);
-  return res.status(201).json({ message: 'User created successfully!' });
+
+  // Generate JWT token
+  const token = jwt.sign({ userId: user._id, email: user.email }, JWT_SECRET, { expiresIn: '7d' });
+
+  return res.status(201).json({ message: 'User created successfully!', token });
 });
 
 // ✅ POST /login with domain check
@@ -86,7 +95,25 @@ app.post('/login', async (req, res) => {
   }
 
   console.log('✅ User logged in:', cleanEmail);
-  return res.status(200).json({ message: 'Login successful!' });
+  // Generate JWT token
+  const token = jwt.sign({ userId: user._id, email: user.email }, JWT_SECRET, { expiresIn: '7d' });
+  return res.status(200).json({ message: 'Login successful!', token });
+});
+
+// AD/LDAP login endpoint
+app.post('/ad-login', async (req, res) => {
+  const { username, password } = req.body;
+  const client = ldap.createClient({ url: LDAP_URL });
+
+  client.bind(`${username}@yourdomain.com`, password, (err) => {
+    if (err) {
+      return res.status(401).json({ message: 'Invalid credentials' });
+    }
+    // Optionally, search for user info here
+    const token = jwt.sign({ username }, JWT_SECRET, { expiresIn: '7d' });
+    res.json({ message: 'Login successful', token });
+    client.unbind();
+  });
 });
 
 // ✅ Start server

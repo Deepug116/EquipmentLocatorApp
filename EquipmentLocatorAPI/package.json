@@ -4,9 +4,10 @@
   "main": "index.js",
   "license": "MIT",
   "dependencies": {
-    "express": "^4.x",
-    "mongoose": "^7.x",
     "bcrypt": "^5.x",
-    "cors": "^2.x"
+    "cors": "^2.x",
+    "express": "^4.x",
+    "jsonwebtoken": "^9.0.2",
+    "mongoose": "^7.x"
   }
 }
